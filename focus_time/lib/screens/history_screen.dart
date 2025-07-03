@@ -24,14 +24,25 @@ class _HistoryScreenState extends State<HistoryScreen> {
     setState(() => sessions = data);
   }
 
-  int get totalMinutes => sessions.fold(0, (sum, s) => sum + s.durationMinutes);
+  double get totalMinutes =>
+      sessions
+              .fold(0.0, (sum, s) => sum + s.coveredMinutes / 60)
+              .toStringAsFixed(1) ==
+          '0.0'
+      ? 0.0
+      : double.parse(
+          sessions
+              .fold(0.0, (sum, s) => sum + s.coveredMinutes / 60)
+              .toStringAsFixed(1),
+        );
 
   double get completionRate {
-    if (sessions.isEmpty) return 0;
-    int fullSessions = sessions
-        .where((s) => s.durationMinutes >= 25)
-        .length; // Assuming 25 mins as full
-    return (fullSessions / sessions.length) * 100;
+    if (sessions.isEmpty) return 0.0;
+    final completedSessions = sessions
+        .where((s) => (s.coveredMinutes / s.totalDuration) * 100 == 100)
+        .length;
+    if (completedSessions == 0) return 0.0;
+    return (completedSessions / sessions.length) * 100;
   }
 
   @override
@@ -68,53 +79,57 @@ class _HistoryScreenState extends State<HistoryScreen> {
         elevation: 1,
       ),
       body: sessions.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.access_time, size: 60, color: Colors.grey[400]),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'NO FOCUS SESSIONS YET',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      letterSpacing: 1,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Start your first focus session to see it here',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[500],
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  OutlinedButton(
-                    onPressed: onStartFocus,
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.black, width: 1.4),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      'START FOCUSING',
+          ? Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.access_time, size: 60, color: Colors.grey[400]),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'NO FOCUS SESSIONS YET',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontSize: 16,
                         letterSpacing: 1,
-                        color: Colors.black,
+                        color: Colors.black87,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Start your first focus session to see it here',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    OutlinedButton(
+                      onPressed: onStartFocus,
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.black, width: 1.4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        'START FOCUSING',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
           : Column(
@@ -133,6 +148,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         label: 'MINUTES FOCUSED',
                         value: '$totalMinutes',
                       ),
+                      _StatColumn(
+                        label: 'COMPLETION RATE',
+                        value: '${completionRate.toStringAsFixed(1)}%',
+                      ),
                     ],
                   ),
                 ),
@@ -142,6 +161,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     itemCount: sessions.length,
                     itemBuilder: (context, index) {
                       final session = sessions[index];
+                      debugPrint("Session: ${session.toJson()}");
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -188,25 +208,48 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                 letterSpacing: 0.8,
                                               ),
                                             ),
-                                            const SizedBox(height: 8),
                                             Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
                                                 Text(
-                                                  '${session.durationMinutes} MINS',
+                                                  '${(session.coveredMinutes / 60).toStringAsFixed(1)} MINS',
                                                   style: const TextStyle(
                                                     fontSize: 18,
                                                     fontFamily: "Orbitron",
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                const Icon(
-                                                  Icons.check_circle_outline,
-                                                  color: Colors.green,
+                                                Text(
+                                                  '${((session.coveredMinutes / session.totalDuration) * 100).toStringAsFixed(1)}%\nof ${session.totalDuration ~/ 60} MINS',
+                                                  textAlign: TextAlign.right,
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.grey,
+                                                  ),
                                                 ),
                                               ],
+                                            ),
+                                            Text(
+                                              ((session.coveredMinutes /
+                                                              session
+                                                                  .totalDuration) *
+                                                          100) ==
+                                                      100
+                                                  ? 'COMPLETED'
+                                                  : 'STOPPED EARLY',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    ((session.coveredMinutes /
+                                                                session
+                                                                    .totalDuration) *
+                                                            100) ==
+                                                        100
+                                                    ? Colors.green
+                                                    : Colors.orange,
+                                              ),
                                             ),
                                           ],
                                         ),

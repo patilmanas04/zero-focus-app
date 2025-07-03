@@ -1,18 +1,25 @@
 class SessionModel {
   final DateTime dateTime;
-  final int durationMinutes;
+  final int coveredMinutes;
+  final int totalDuration;
 
-  SessionModel({required this.dateTime, required this.durationMinutes});
+  SessionModel({
+    required this.dateTime,
+    required this.coveredMinutes,
+    required this.totalDuration,
+  });
 
   Map<String, dynamic> toJson() => {
     'dateTime': dateTime.toIso8601String(),
-    'durationMinutes': durationMinutes,
+    'coveredMinutes': coveredMinutes,
+    'totalDuration': totalDuration,
   };
 
   static SessionModel fromJson(Map<String, dynamic> json) {
     return SessionModel(
       dateTime: DateTime.parse(json['dateTime']),
-      durationMinutes: json['durationMinutes'],
+      coveredMinutes: json['coveredMinutes'],
+      totalDuration: json['totalDuration'] ?? 0,
     );
   }
 }

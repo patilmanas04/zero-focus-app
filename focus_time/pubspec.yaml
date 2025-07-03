@@ -38,6 +38,11 @@ dependencies:
   wakelock: ^0.6.2
   intl: ^0.20.2
   audioplayers: ^6.5.0
+  android_alarm_manager_plus: ^4.0.7
+  flutter_local_notifications: ^19.3.0
+
+dependency_overrides:
+  wakelock_windows: 0.2.0
 
 dev_dependencies:
   flutter_test:

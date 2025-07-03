@@ -60,7 +60,7 @@ class _DottedBorderPainter extends CustomPainter {
 class _HomeScreenState extends State<HomeScreen> {
   int selectedMinutes = 30;
 
-  final List<int> focusDurations = [1, 5, 10, 15, 25, 30, 45, 60];
+  final List<int> focusDurations = [5, 10, 15, 25, 30, 45, 60];
 
   void startFocusSession() {
     Navigator.push(
