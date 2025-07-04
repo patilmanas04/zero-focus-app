@@ -58,7 +58,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             letterSpacing: 1,
-            fontFamily: "Orbitron",
+            fontFamily: "NDot",
           ),
         ),
         leading: IconButton(
@@ -248,7 +248,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                             100) ==
                                                         100
                                                     ? Colors.green
-                                                    : Colors.orange,
+                                                    : Colors.red,
                                               ),
                                             ),
                                           ],

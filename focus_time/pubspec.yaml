@@ -40,6 +40,7 @@ dependencies:
   audioplayers: ^6.5.0
   android_alarm_manager_plus: ^4.0.7
   flutter_local_notifications: ^19.3.0
+  flutter_native_splash: ^2.4.6
 
 dependency_overrides:
   wakelock_windows: 0.2.0
@@ -107,3 +108,6 @@ flutter:
         - asset: assets/fonts/Orbitron-Regular.ttf
         - asset: assets/fonts/Orbitron-Bold.ttf
           weight: 700
+    - family: NDot
+      fonts:
+        - asset: assets/fonts/ndot-45-inspired-by-nothing.otf

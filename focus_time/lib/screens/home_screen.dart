@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Zero.',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontFamily: 'Orbitron',
+            fontFamily: 'NDot',
             fontSize: 25,
             letterSpacing: 1,
           ),
